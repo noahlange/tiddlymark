@@ -1,0 +1,8 @@
+created: 20181027132615888
+modified: 20181027132629238
+title: $:/config/FileSystemPaths
+type: text/vnd.tiddlywiki
+
+[is[system]removeprefix[$:/]addprefix[system/]]
+[tag[Journal]addprefix[journal/]]
+[!is[system]addprefix[content/]]

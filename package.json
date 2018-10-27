@@ -1,0 +1,16 @@
+{
+  "name": "tiddlymark",
+  "description": "TiddlyWiki starter with an eye on Markdown content",
+  "author": "Noah Lange <noahrlange@gmail.com>",
+  "version": "0.1.0",
+  "scripts": {
+    "start": "node . wiki --server 8080 $:/core/save/all text/plain text/html \"Noah Lange\""
+  },
+  "devDependencies": {
+    "@types/node": "^10.12.0"
+  },
+  "dependencies": {
+    "gray-matter": "^4.0.1",
+    "tiddlywiki": "^5.1.17"
+  }
+}
