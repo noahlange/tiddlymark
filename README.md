@@ -1,10 +1,18 @@
-# TiddlyWiki Plugins
+# tiddlymark
 
-A handful of TiddlyWiki plugins designed to make things a little friendlier for
-folks from the mainstream JS ecosystem, the scripts to bundle them, and some
-half-baked typings for TiddlyWiki.
+A server-based [TiddlyWiki](https://tiddlywiki.com/) distribution for improved
+Markdown support.
 
-## markdown-plus
+Most of the codebase is a collection of TiddlyWiki plugins designed to make
+things a little friendlier for folks from the mainstream JS and web dev
+ecosystems.
+
+The rest is composed of a few generic scripts to generate the plugin files and
+some half-baked TS types for TiddlyWiki as a whole.
+
+### Included plugins
+
+#### markdown-plus
 
 Alternative parser/renderer that uses `simple-markdown` to build a JsonML tree
 instead of generating raw HTML. We can then take advantage of TiddlyWiki's HTML
@@ -14,26 +22,26 @@ link-checking, &amp;c.
 Also includes a half-dozen syntax extensions for emojis, containers,
 sub/superscript and the aforementioned inline/block macros.
 
-## sass
+#### sass
 
 Compiles `.scss` files tagged with `$:/tags/Stylesheet` into a hidden CSS
 tiddler, which is then inserted into the DOM like other stylesheets. Requires a
 page template override to avoid inserting the SASS source as CSS.
 
-## prettier
+#### prettier
 
-Runs [prettier](https://prettier.io) on HTML, Markdown, JavaScript/TypeScript
-and CSS/SCSS/LESS/PostCSS on save. There's a noticeable pause, but I much prefer
-not having to worry about formatting things...
+Adds a save hoook to run [prettier](https://prettier.io) on HTML, Markdown,
+JavaScript/TypeScript and CSS/SCSS/LESS/PostCSS on save. There's a slight pause
+upon save, but I'll take that over constantly formatting content.
 
-## monaco, monaco-workers
+#### monaco, monaco-workers
 
 A pretty straightforward [Monaco](https://github.com/Microsoft/monaco-editor)
 integration, which I (personally) like a lot more than Ace and CodeMirror.
 Requires `monaco-workers`, which bundles its webworkers and adds a server route
 to fetch them.
 
-## fs-plus
+#### fs-plus
 
 Adjusts the standard file-system adapter to embed metadata as YAML into the
 front-matter of Markdown files, which are then saved as `.md`. Also provides a
@@ -41,3 +49,30 @@ deserializer that reads these files back into a format TiddlyWiki understands.
 
 Helps manage some file clutter and (more importantly) gives us regular Markdown
 files. These can then be committed and viewed on GitHub or whatevered.
+
+### Custom plugins
+
+You can use the build scripts to generate custom plugins. Each plugin gets a
+standalone directory in `plugins` with a webpack config and `index.js` that
+serves as a "manifest" with the appropriate content and config.
+
+#### webpack.config.js
+
+Custom configuration for webpack goes in a `webpack.config.js` file to be merged
+with the common `webpack.config.js` file at the project root. Things to note:
+
+1. Your `target` depends on where you to run the code. Generally speaking,
+   common or client-side code should use `web`; explicitly server-side code
+   should use `node` instead. That being said, that's not always the case—it can
+   get a little complicated.
+2. Compiled files are dumped into `./build`.
+
+#### index.js
+
+A plain JS file that exports an object roughly corresponding to the file
+structure of your plugin. Whatever the structure, the plugin's contents will
+always be nested under `$:/plugins`.
+
+Children of any given file are listed beneath `_`. Each key is a filename; the
+keys beneath it correspond to its contents (`text`) and metadata (the rest).
+Values need to be directly serializable to JSON or Promises of them.

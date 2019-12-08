@@ -1,4 +1,4 @@
-/// <reference lib="dom" /> #
+/// <reference lib="dom" />
 
 import * as monaco from 'monaco-editor';
 
@@ -87,7 +87,7 @@ export class MonacoEngine implements EditTextEngine {
   protected addListeners(): void {
     const model = this.monaco.getModel();
     if (model) {
-      model.onDidChangeContent(_ => {
+      model.onDidChangeContent(() => {
         this.widget.saveChanges(this.getText());
       });
       this.monaco.onKeyDown(e => {

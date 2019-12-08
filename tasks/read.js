@@ -29,7 +29,7 @@ async function readPlugin(name) {
   return { name, ...res };
 }
 
-module.exports = async spinner => {
+module.exports = async function read(spinner) {
   spinner.prefixText = 'read';
 
   const directory = resolve(__dirname, '../plugins');

@@ -1,3 +1,5 @@
+/** eslint-env node */
+
 const ora = require('ora');
 
 const read = require('./read');

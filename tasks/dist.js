@@ -8,7 +8,7 @@ const { promisify } = require('util');
 const cmd = promisify(exec);
 const opts = { cwd: resolve(__dirname, '../') };
 
-module.exports = async (spinner, plugins) => {
+module.exports = async function dist(spinner, plugins) {
   spinner.prefixText = 'dist';
   spinner.start();
 

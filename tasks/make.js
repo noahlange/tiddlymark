@@ -13,8 +13,9 @@ const info = {
   modifier: name
 };
 
-const tiddlersFrom = plugin => {
-  const { name, ...tiddlers } = plugin;
+function tiddlersFrom(plugin) {
+  const tiddlers = { ...plugin };
+  delete tiddlers.name;
   for (const title in tiddlers) {
     const tiddler = tiddlers[title];
     tiddlers[title] = {
@@ -24,9 +25,9 @@ const tiddlersFrom = plugin => {
     };
   }
   return tiddlers;
-};
+}
 
-module.exports = (spinner, plugins) => {
+module.exports = function make(spinner, plugins) {
   spinner.prefixText = 'make';
 
   const res = plugins.map(plugin => {
