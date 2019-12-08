@@ -1,2 +1,6 @@
+.vscode
 node_modules
+plugins/.*
+wiki
 yarn.lock
+bin

@@ -1,27 +1,43 @@
-# TiddlyMark
-A TiddlyWiki installation with some modifications to make things a little
-friendlier for folks who are used to Git + Markdown + YAML workflows. Clears
-up a good amount of the filesystem clutter you usually get when working with
-Markdown in TiddlyWiki. Highlights:
+# TiddlyWiki Plugins
 
-- FileSystemPaths tiddler to separate journals from content from config
-- Markdown saved/loaded/parsed with inline YAML metadata instead of
-  separate metadata files
-- link parser regex modified to use allow spaces and apostrophes in URLs.
-  this is against virtually every Markdown spec, but it was a pain point for me
-  because I needed apostrophes and spaces in my titles, darnit!
-- swapped out parser with more features than the original, and less jank than
-  some of the other available markdown parsers. instead of writing raw html, we
-  return JSONML that TiddlyWiki turns into HTML after running it through its own
-  pipelines (syntax highlighting, link resolution, macros interpolation, etc).
+A handful of TiddlyWiki plugins designed to make things a little friendlier for
+folks from the mainstream JS ecosystem, the scripts to bundle them, and some
+half-baked typings for TiddlyWiki.
 
-```md
-<!-- will no longer explode, hooray! -->
-[Dumbledore's Army](#Dumbledore's Army).
-```
+## markdown-plus
 
-Things you may want to do that I have not:
+Alternative parser/renderer that uses `simple-markdown` to build a JsonML tree
+instead of generating raw HTML. We can then take advantage of TiddlyWiki's HTML
+rendering features that would otherwise be unavailable to us&mdash;macros,
+link-checking, &amp;c.
 
-- get rid of the "New Tiddler" button in the main toolbar
-- install an editor with Markdown syntax highlighting (figured that was personal
-  preference)
+Also includes a half-dozen syntax extensions for emojis, containers,
+sub/superscript and the aforementioned inline/block macros.
+
+## sass
+
+Compiles `.scss` files tagged with `$:/tags/Stylesheet` into a hidden CSS
+tiddler, which is then inserted into the DOM like other stylesheets. Requires a
+page template override to avoid inserting the SASS source as CSS.
+
+## prettier
+
+Runs [prettier](https://prettier.io) on HTML, Markdown, JavaScript/TypeScript
+and CSS/SCSS/LESS/PostCSS on save. There's a noticeable pause, but I much prefer
+not having to worry about formatting things...
+
+## monaco, monaco-workers
+
+A pretty straightforward [Monaco](https://github.com/Microsoft/monaco-editor)
+integration, which I (personally) like a lot more than Ace and CodeMirror.
+Requires `monaco-workers`, which bundles its webworkers and adds a server route
+to fetch them.
+
+## fs-plus
+
+Adjusts the standard file-system adapter to embed metadata as YAML into the
+front-matter of Markdown files, which are then saved as `.md`. Also provides a
+deserializer that reads these files back into a format TiddlyWiki understands.
+
+Helps manage some file clutter and (more importantly) gives us regular Markdown
+files. These can then be committed and viewed on GitHub or whatevered.
