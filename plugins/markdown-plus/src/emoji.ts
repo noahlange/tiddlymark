@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/camelcase */
+// from `node-emoji`, released under the MIT license
+// https://github.com/omnidan/node-emoji/blob/master/lib/emoji.json
 
 export default {
   '100': '💯',

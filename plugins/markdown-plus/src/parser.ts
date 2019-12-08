@@ -38,10 +38,10 @@ function transformNode(node) {
           widget.type = 'link';
           widget.attributes.to = widget.attributes.href;
           if (widget.attributes.to.type === 'string') {
-            //Remove '#' before conversion to wikilink
+            // Remove '#' before conversion to wikilink
             widget.attributes.to.value = widget.attributes.to.value.substr(1);
           }
-          //Children is fine
+          // Children is fine
           delete widget.tag;
           delete widget.attributes.href;
         }
@@ -98,7 +98,7 @@ function transformNodes(nodes) {
 ((): void => {
   const parser = parserFor(rules);
   const render = reactFor(ruleOutput(rules, 'jsonml'));
-  exports['text/x-markdown'] = function(text: string) {
+  exports['text/x-markdown'] = function(type: string, text: string) {
     const tree = parser(text, { inline: false });
     const output = render(tree);
     this.tree = transformNodes(output);

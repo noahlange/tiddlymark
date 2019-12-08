@@ -1,14 +1,29 @@
 # tiddlymark
 
 A server-based [TiddlyWiki](https://tiddlywiki.com/) distribution for improved
-Markdown support.
+Markdown support. Obviously, this makes liberal use of code loosely adapted from
+TiddlyWiki's source.
 
 Most of the codebase is a collection of TiddlyWiki plugins designed to make
 things a little friendlier for folks from the mainstream JS and web dev
 ecosystems.
 
-The rest is composed of a few generic scripts to generate the plugin files and
-some half-baked TS types for TiddlyWiki as a whole.
+The rest is composed of a few scripts to generate the plugin files and some
+half-baked TS types for TiddlyWiki as a whole.
+
+### Running the server
+
+I have no intention to get much of this running on the client; it operates with
+the assumption that you're running TiddlyWiki from localhost.
+
+Some peculiarities in how TiddlyWiki handles file loading/deserialization make
+custom deserializers inordinately difficult; these behaviors needed to be
+overwritten at the JS level.
+
+To get everything running properly, you'll need to run the CLI script in
+`bin/serve` or use the `tiddlymark` script. The updated CLI will add all the
+plugins in `./wiki/plugins`, create a deserializer tiddler if necessary and boot
+the server, using the user's git username as the wiki's anonymous username.
 
 ### Included plugins
 
@@ -19,8 +34,16 @@ instead of generating raw HTML. We can then take advantage of TiddlyWiki's HTML
 rendering features that would otherwise be unavailable to us&mdash;macros,
 link-checking, &amp;c.
 
-Also includes a half-dozen syntax extensions for emojis, containers,
-sub/superscript and the aforementioned inline/block macros.
+Also includes a few syntax extensions for:
+
+- HTML entities (e.g., `&rarr;`)
+- emojis (e.g., `:smile:`)
+- div containers (fences with `:::` instead of backticks)
+- subscript and superscript (e.g., `~sub~`, `^super^`)
+- inline and block macros (e.g., `<sayhi>`)
+
+Unlike the stock Markdown plugin, link targets and image sources don't require a
+preceding `#`.
 
 #### sass
 
@@ -56,6 +79,10 @@ You can use the build scripts to generate custom plugins. Each plugin gets a
 standalone directory in `plugins` with a webpack config and `index.js` that
 serves as a "manifest" with the appropriate content and config.
 
+Plugins you'd like to keep in the `plugins` directory but don't want to build
+can be placed in directories prefixed with `.`. The build scripts will ignore
+them.
+
 #### webpack.config.js
 
 Custom configuration for webpack goes in a `webpack.config.js` file to be merged
@@ -76,3 +103,11 @@ always be nested under `$:/plugins`.
 Children of any given file are listed beneath `_`. Each key is a filename; the
 keys beneath it correspond to its contents (`text`) and metadata (the rest).
 Values need to be directly serializable to JSON or Promises of them.
+
+#### Building plugins
+
+To generate plugins during development, `npm run build` will suffice.
+`npm run dist` is significantly more resource-intensive and intended for
+production builds.
+
+The generated files are copied to `wiki/plugins`.
