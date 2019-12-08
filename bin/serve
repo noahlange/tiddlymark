@@ -1,0 +1,44 @@
+#!/usr/bin/env node
+
+(async () => {
+  const [node, cmd, dir, ...args] = process.argv;
+
+  const cp = require('child_process');
+  const { TiddlyWiki } = require('tiddlywiki');
+  const { resolve } = require('path');
+  const { promises: fs } = require('fs');
+  const { promisify } = require('util');
+  const matter = require('gray-matter');
+  const exec = promisify(cp.exec);
+
+  const $tw = TiddlyWiki();
+  const user = await exec('git config user.name');
+  const plugins = await fs.readdir(resolve(__dirname, '../wiki/plugins'));
+
+  $tw.boot.extraPlugins = plugins
+    .map(p => resolve(__dirname, '../wiki/plugins', p))
+    .map(d => `+${d}`);
+
+  // create the custom deserializer if needed
+  if (plugins.includes('fs-plus')) {
+    $tw.modules.define(
+      '$:/plugins/noahlange/fs-plus/deserialize.js',
+      'tiddlerdeserializer',
+      {
+        'text/x-markdown'(text) {
+          const { content, data } = matter(text);
+          return [{ ...data, text: content }];
+        }
+      }
+    );
+  }
+
+  $tw.boot.argv = [
+    dir,
+    `--listen`,
+    `anon-username=${user.stdout.trim()}`,
+    ...args
+  ];
+
+  $tw.boot.boot();
+})().catch(e => console.error(e));

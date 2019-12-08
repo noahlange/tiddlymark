@@ -11,6 +11,17 @@ ecosystems.
 The rest is composed of a few scripts to generate the plugin files and some
 half-baked TS types for TiddlyWiki as a whole.
 
+## Quick Start
+
+```bash
+# clone repository
+git clone git@github.com:noahlange/tiddlymark.git && cd tiddlymark
+# install dependencies and build plugins
+npm install && npm run build
+# serve the contents of ./wiki using the aforementioned plugins
+node ./bin/serve ./wiki
+```
+
 ### Running the server
 
 I have no intention to get much of this running on the client; it operates with
