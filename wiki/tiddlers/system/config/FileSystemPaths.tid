@@ -4,5 +4,11 @@ title: $:/config/FileSystemPaths
 type: text/vnd.tiddlywiki
 
 [is[system]removeprefix[$:/]addprefix[system/]]
+[is[image]addprefix[media/]]
 [tag[Journal]addprefix[journal/]]
 [!is[system]addprefix[content/]]
+[tag[$:/tags/Macro]addprefix[system/macros]]
+
+[field:type[application/javascript]addprefix[system/scripts]]
+[!prefix[$:/]field:type[text/scss]addprefix[system/styles]]
+[!prefix[$:/]field:type[text/css]addprefix[system/styles]]
