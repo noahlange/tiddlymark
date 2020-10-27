@@ -69,12 +69,11 @@ Adds a save hoook to run [prettier](https://prettier.io) on HTML, Markdown,
 JavaScript/TypeScript and CSS/SCSS/LESS/PostCSS on save. There's a slight pause
 upon save, but I'll take that over constantly formatting content.
 
-#### monaco, monaco-workers
+
+#### monaco
 
 A pretty straightforward [Monaco](https://github.com/Microsoft/monaco-editor)
 integration, which I (personally) like a lot more than Ace and CodeMirror.
-Requires `monaco-workers`, which bundles its webworkers and adds a server route
-to fetch them.
 
 #### fs-plus
 
