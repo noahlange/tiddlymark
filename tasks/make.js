@@ -56,7 +56,7 @@ module.exports = function make(spinner, plugins) {
     };
   });
 
-  spinner.text = `generated ${res.length} plugins`;
+  spinner.text = `bundled ${res.length} plugins`;
   spinner.succeed();
   return res;
 };
