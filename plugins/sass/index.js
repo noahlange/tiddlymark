@@ -37,6 +37,11 @@ module.exports = {
                 type: 'application/javascript',
                 text: read('parser.js')
               },
+              'sass.js': {
+                'module-type': 'library',
+                'global-module': true,
+                text: read('sass.js')
+              },
               'sass-styles.css': {
                 tags: ['$:/tags/Stylesheet'],
                 text: '',
