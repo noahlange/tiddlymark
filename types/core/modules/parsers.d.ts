@@ -1,12 +1,11 @@
-import { WidgetNode } from '$:/core/modules/widgets/widget.js';
-import { ParserOptions } from 'prettier';
-
 interface ParserOptions {
   parseAsInline: string;
   _canonical_url?: string;
 }
 
-type Parser = (type: string, text: string, options: ParserOptions) => void;
+declare interface Parser {
+  (type: string, text: string, options: ParserOptions): void;
+}
 
 type AudioFile = 'audio/ogg' | 'audio/mpeg' | 'audio/mp3' | 'audio/mp4';
 type VideoFile = 'video/mp4' | 'video/quicktime';
@@ -46,11 +45,6 @@ declare module '$:/core/modules/parsers/csvparser.js' {
   export = exports;
 }
 
-declare module '$:/core/modules/parsers/imageparser.js' {
-  const exports: Record<ImageFile, Parser>;
-  export = exports;
-}
-
 declare module '$:/core/modules/parsers/pdfparser.js' {
   const exports: Record<PDFFile, Parser>;
   export = exports;
@@ -82,7 +76,10 @@ declare module '$:/core/modules/parsers/wikiparser/wikiparser.js' {
 
   class TiddlyWikiParser {
     public loadRemoteTiddler(url: string): void;
-    public setupRules(proto: object, configPrefix: string): void;
+    public setupRules(
+      proto: Record<string, unknown>,
+      configPrefix: string
+    ): void;
     public instantiateRules(
       classes: string[],
       type: string,
@@ -109,7 +106,7 @@ declare module '$:/core/modules/parsers/wikiparser/wikiparser.js' {
     public parseClasses(): string[];
     public amendRules(type: 'only' | 'except', names: string[]): void;
 
-    constructor(type: string, text: string, options: ParserOptions);
+    public constructor(type: string, text: string, options: ParserOptions);
   }
 
   const exports: Record<'text/vnd.tiddlywiki', TiddlyWikiParser>;
@@ -118,7 +115,7 @@ declare module '$:/core/modules/parsers/wikiparser/wikiparser.js' {
 
 declare module '$:/core/modules/parsers/wikiparser/rules/wikirulebase.js' {
   export class WikiRuleBase {
-    public(parser: Parser): void;
+    public init(parser: Parser): void;
     public findNextMatch(start: number): number;
   }
 }

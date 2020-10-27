@@ -3,29 +3,28 @@ declare module '$:/plugins/noahlange/monaco/editor.js' {
   export class Monaco extends Widget {}
 }
 declare module '$:/plugins/noahlange/monaco/engine.js' {
-  import { widget as Widget } from '$:/core/modules/widgets/widget.js';
+  import type { widget as Widget } from '$:/core/modules/widgets/widget.js';
 
-  import {
+  import type {
     EditTextEngine,
-    EditTextEngineOptions,
-    TextOperation
+    EditTextEngineOptions
   } from '$:/core/modules/editor/factory.js';
 
   export class MonacoEngine implements EditTextEngine {
-    getText(): string;
-    fixHeight(): void;
-    focus(): void;
+    public getText(): string;
+    public fixHeight(): void;
+    public focus(): void;
 
-    createTextOperation(): null;
-    executeTextOperation(): void;
+    public createTextOperation(): null;
+    public executeTextOperation(): void;
 
-    widget: Widget;
-    value: string;
-    parentNode: HTMLElement;
-    nextSibling: HTMLElement;
-    domNode: HTMLElement;
+    public widget: Widget;
+    public value: string;
+    public parentNode: HTMLElement;
+    public nextSibling: HTMLElement;
+    public domNode: HTMLElement;
 
-    constructor(options: EditTextEngineOptions);
+    public constructor(options: EditTextEngineOptions);
   }
 }
 

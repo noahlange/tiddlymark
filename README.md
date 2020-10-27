@@ -1,5 +1,9 @@
 # tiddlymark
 
+> The TiddlyWiki version is currently pinned at 5.1.21. Evidently I ran into
+> some compatibility issues at some point. I don't remember what they are; I'll
+> take another look.
+
 A server-based [TiddlyWiki](https://tiddlywiki.com/) distribution for improved
 Markdown support. Obviously, this makes liberal use of code loosely adapted from
 TiddlyWiki's source.
@@ -25,7 +29,7 @@ node ./bin/serve ./wiki
 ### Running the server
 
 I have no intention to get much of this running on the client; it operates with
-the assumption that you're running TiddlyWiki from localhost.
+the assumption that you're running TiddlyWiki as a server on `localhost`.
 
 Some peculiarities in how TiddlyWiki handles file loading/deserialization make
 custom deserializers inordinately difficult; these behaviors needed to be
@@ -38,6 +42,23 @@ the server, using the user's git username as the wiki's anonymous username.
 
 ### Included plugins
 
+| Plugin        |                                                     |
+| :------------ | :-------------------------------------------------- |
+| fs-plus       | Write metadata to YAML front-matter in `.md` files. |
+| markdown-plus | "Native" markdown renderer.                         |
+| monaco        | Enable the monaco text editor.                      |
+| pretty        | Prettify files on save.                             |
+| sass          | Compile SASS files into a CSS stylesheet tiddler.   |
+
+#### fs-plus
+
+Adjusts the standard file-system adapter to embed metadata as YAML into the
+front-matter of Markdown files, which are then saved as `.md`. Also provides a
+deserializer that reads these files back into a format TiddlyWiki understands.
+
+Helps manage some file clutter and (more importantly) gives us regular Markdown
+files. These can then be committed and viewed on GitHub or whatevered.
+
 #### markdown-plus
 
 Alternative parser/renderer that uses `simple-markdown` to build a JsonML tree
@@ -49,12 +70,13 @@ Also includes a few syntax extensions for:
 
 - HTML entities (e.g., `&rarr;`)
 - emojis (e.g., `:smile:`)
-- div containers (fences with `:::` instead of backticks)
+- ` <div>` containers (fences with `:::` instead of backticks)
 - subscript and superscript (e.g., `~sub~`, `^super^`)
-- inline and block macros (e.g., `<sayhi>`)
+- insert (`++ins++`)
+- inline and block macros (e.g., `<<sayhi>>`)
 
-Unlike the stock Markdown plugin, link targets and image sources don't require a
-preceding `#`.
+Unlike the stock Markdown plugin, link targets and image sources _don't_ require
+a preceding `#`.
 
 #### sass
 
@@ -62,27 +84,16 @@ Compiles `.scss` files tagged with `$:/tags/Stylesheet` into a hidden CSS
 tiddler, which is then inserted into the DOM like other stylesheets. Requires a
 page template override to avoid inserting the SASS source as CSS.
 
-#### prettier
+#### pretty
 
 Adds a save hoook to run [prettier](https://prettier.io) on HTML, Markdown,
 JavaScript/TypeScript and CSS/SCSS/LESS/PostCSS on save. There's a slight pause
 upon save, but I'll take that over constantly formatting content.
 
-#### monaco, monaco-workers
+#### monaco
 
 A pretty straightforward [Monaco](https://github.com/Microsoft/monaco-editor)
 integration, which I (personally) like a lot more than Ace and CodeMirror.
-Requires `monaco-workers`, which bundles its webworkers and adds a server route
-to fetch them.
-
-#### fs-plus
-
-Adjusts the standard file-system adapter to embed metadata as YAML into the
-front-matter of Markdown files, which are then saved as `.md`. Also provides a
-deserializer that reads these files back into a format TiddlyWiki understands.
-
-Helps manage some file clutter and (more importantly) gives us regular Markdown
-files. These can then be committed and viewed on GitHub or whatevered.
 
 ### Custom plugins
 
@@ -117,8 +128,7 @@ Values need to be directly serializable to JSON or Promises of them.
 
 #### Building plugins
 
-To generate plugins during development, `npm run build` will suffice.
-`npm run dist` is significantly more resource-intensive and intended for
-production builds.
+To generate plugins during development, run `npm run build`. `npm run dist` is
+significantly more resource-intensive and intended for production builds.
 
-The generated files are copied to `wiki/plugins`.
+In either case, the generated files are copied to `wiki/plugins`.

@@ -2,7 +2,7 @@
 
 import * as monaco from 'monaco-editor';
 
-import {
+import type {
   EditTextWidget,
   EditTextEngine,
   EditTextEngineOptions
@@ -11,8 +11,9 @@ import {
 import { parseConfig, langFrom, workerFrom } from './utils';
 
 window.MonacoEnvironment = {
-  getWorkerUrl: (_: unknown, label: string) =>
-    `/workers/noahlange/monaco/${workerFrom(label)}.worker.js`
+  getWorkerUrl(_: unknown, label: string): string {
+    return `/workers/noahlange/monaco/${workerFrom(label)}.worker.js`;
+  }
 };
 
 export class MonacoEngine implements EditTextEngine {
@@ -32,7 +33,7 @@ export class MonacoEngine implements EditTextEngine {
     customTheme?: monaco.editor.IStandaloneThemeData;
   };
 
-  constructor(options: EditTextEngineOptions) {
+  public constructor(options: EditTextEngineOptions) {
     const { widget, parentNode, nextSibling, ...tiddler } = options;
     this.widget = widget;
     this.parentNode = parentNode;

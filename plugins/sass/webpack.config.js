@@ -10,7 +10,16 @@ module.exports = [
   {
     target: 'node',
     entry: {
+      'sass/sass': resolve(__dirname, `./src/sass.ts`),
       'sass/hook': resolve(__dirname, './src/hook.ts')
-    }
+    },
+    node: {
+      __dirname: 'mock'
+    },
+    externals: [
+      /crypto/,
+      ({ context, request }, done) =>
+        /^(\$:\/)/i.test(request) ? done(null, 'commonjs ' + request) : done()
+    ]
   }
 ];

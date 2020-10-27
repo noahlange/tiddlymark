@@ -6,26 +6,18 @@ module.exports = {
     _: {
       noahlange: {
         _: {
-          'pretty-plus': {
+          pretty: {
             description: 'pretty+',
             author: 'Noah Lange',
             _: {
               readme: {
-                text: `
-                  ! pretty-plus
-                  Format-on-save hook for ''~TiddlyWiki'', powered by [ext[prettier|https://prettier.io]]. Capable of re-formatting a variety of file-types:
-                    * HTML
-                    * Markdown
-                    * ~JavaScript, JSON
-                    * ~TypeScript
-                    * CSS, SCSS, LESS
-                `
+                text: fs.readFile(resolve(__dirname, './README.tid'), 'utf8')
               },
-              'pretty-plus.js': {
+              'pretty.js': {
                 'module-type': 'startup',
                 'global-module': true,
                 text: fs.readFile(
-                  resolve(__dirname, '../.build/pretty-plus/pretty-plus.js'),
+                  resolve(__dirname, '../.build/pretty/pretty.js'),
                   'utf8'
                 )
               }

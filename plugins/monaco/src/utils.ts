@@ -27,9 +27,11 @@ export function langFrom(type: string): string {
     case 'application/typescript':
       return 'typescript';
     case 'text/css':
-    case 'text/scss':
-    case 'text/less':
       return 'css';
+    case 'text/scss':
+      return 'scss';
+    case 'text/less':
+      return 'less';
   }
   // just syntax highlighting
   switch (type) {
@@ -50,13 +52,12 @@ function parse(
   const options = args.split(',').filter(f => !!f);
   switch (name) {
     case 'boolean':
-      return typeof value === 'string'
-        ? value.toLowerCase() === 'true'
-        : value === true;
+      return ['1', 1, 'true', true].includes(value);
     case 'enum':
       if (options.includes(value)) {
         return value;
       }
+      return null;
     case 'string':
       return value || null;
     case 'number':
@@ -71,30 +72,31 @@ function parse(
     case 'enum[]':
     case 'boolean[]':
     case 'string[]':
-    case 'number[]':
-    case 'string[]':
+    case 'number[]': {
       const parsed = JSON.parse(value || '[]');
       if (Array.isArray(parsed) && type !== 'json') {
         const itemType = type.slice(0, -2);
         return parsed.map(i => parse(itemType, i));
       }
+      break;
+    }
   }
   return null;
 }
 
-export function set(
-  obj: Record<string, any>,
+export function set<T extends Record<string, unknown>, V>(
+  obj: T,
   key: string,
-  value: $AnyFixMe
-): Record<string, any> {
-  return key.split('.').reduce((o, k, i, a) => {
+  value: V
+): V {
+  return key.split('.').reduce((o: $AnyFixMe, k, i, a) => {
     const last = i === a.length - 1;
-    o[k] = last ? value : o[k] || {};
+    o[k] = last ? value : o[k] ?? {};
     return last ? obj : o[k];
-  }, obj);
+  }, obj) as V;
 }
 
-export function parseConfig(ns: string, wiki: Wiki): object {
+export function parseConfig(ns: string, wiki: Wiki): Record<string, unknown> {
   const filter = `[all[shadows+tiddlers]prefix[$:/config/${ns}/]]`;
   const filtered = wiki.filterTiddlers(filter);
   return filtered.reduce((a, title: string) => {

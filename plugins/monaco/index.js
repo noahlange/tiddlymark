@@ -167,6 +167,29 @@ module.exports = {
               'route.js': {
                 text: read('monaco/route.js'),
                 'module-type': 'route'
+              },
+              'css.worker.js': {
+                type: 'application/javascript',
+                text: read('monaco/workers/css.worker.js')
+              },
+              'editor.worker.js': {
+                type: 'application/javascript',
+                text: read('monaco/workers/editor.worker.js')
+              },
+              'html.worker.js': {
+                type: 'application/javascript',
+                text: read('monaco/workers/html.worker.js')
+              },
+              'json.worker.js': {
+                type: 'application/javascript',
+                text: read('monaco/workers/json.worker.js')
+              },
+              'typescript.worker.js': {
+                type: 'application/javascript',
+                text: read('monaco/workers/ts.worker.js')
+              },
+              workers: {
+                'plugin.info': {}
               }
             }
           }
