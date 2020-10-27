@@ -11,3 +11,6 @@
 - [monaco-workers]: merge into main `monaco` plugin
 - [prettier]: `prettier` update (1.18.2 → 2.1.12)
 - [prettier]: adds XML plugin
+- [tooling] ESLint & Co. updates, configuration
+- [tooling] Babel & Co. updates, new plugins
+- [tooling] Webpack & Co. updates

@@ -1,24 +1,25 @@
 const TerserPlugin = require('terser-webpack-plugin');
 const { readdirSync: readdir } = require('fs');
-const { optimize } = require('webpack');
-const { smart } = require('webpack-merge');
+const webpack = require('webpack');
+const { merge } = require('webpack-merge');
+const babel = require('./babel.config');
 
 const isProduction = process.env.NODE_ENV === 'production';
+
+const terser = new TerserPlugin({
+  terserOptions: {
+    keep_classnames: true,
+    keep_fnames: true
+  }
+});
 
 const config = {
   mode: process.env.NODE_ENV || 'none',
   module: {
     rules: [
       {
-        test: /\.(png|jpg|gif)$/i,
-        use: [
-          {
-            loader: 'url-loader',
-            options: {
-              limit: 8192
-            }
-          }
-        ]
+        test: /\.(png|jpg|gif|ttf)$/i,
+        use: [{ loader: 'url-loader', options: { limit: 8192 } }]
       },
       {
         test: /\.css$/,
@@ -30,22 +31,9 @@ const config = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: [
-              [
-                '@babel/preset-env',
-                {
-                  targets: {
-                    node: true,
-                    browsers: [
-                      'last 2 Firefox versions',
-                      'last 2 Chrome versions'
-                    ]
-                  }
-                }
-              ],
-              '@babel/preset-typescript'
-            ],
+            ...babel,
             plugins: [
+              ...babel.plugins,
               [
                 '@babel/plugin-transform-runtime',
                 {
@@ -55,9 +43,7 @@ const config = {
                   regenerator: false,
                   useESModules: true
                 }
-              ],
-              '@babel/plugin-syntax-dynamic-import',
-              ['@babel/plugin-proposal-class-properties', { loose: true }]
+              ]
             ]
           }
         }
@@ -65,29 +51,21 @@ const config = {
     ]
   },
   optimization: {
-    minimizer: isProduction
-      ? [
-          new TerserPlugin({
-            terserOptions: {
-              keep_classnames: true,
-              keep_fnames: true
-            }
-          })
-        ]
-      : []
+    minimizer: isProduction ? [terser] : []
   },
   output: {
     filename: '[name].js',
     libraryTarget: 'commonjs',
-    path: `${__dirname}/plugins/.build`
+    path: `${__dirname}/plugins/.build`,
+    publicPath: '/'
   },
-  externals: (ctx, req, cb) =>
-    /^(\$:\/|gray-matter)/i.test(req) ? cb(null, 'commonjs ' + req) : cb(),
-  plugins: [
-    new optimize.LimitChunkCountPlugin({
-      maxChunks: 1
-    })
+  externals: [
+    ({ request }, done) =>
+      /^(\$:\/|gray-matter)/i.test(request)
+        ? done(null, 'commonjs ' + request)
+        : done()
   ],
+  plugins: [new webpack.optimize.LimitChunkCountPlugin({ maxChunks: 1 })],
   resolve: {
     extensions: ['.ts', '.mjs', '.js', '.json']
   }
@@ -100,5 +78,5 @@ const targets = readdir('./plugins')
   .reduce((a, b) => ({ ...a, [b.target]: (a[b.target] || []).concat(b) }), {});
 
 module.exports = Object.values(targets).map(plugins =>
-  smart(config, ...plugins)
+  merge(config, ...plugins)
 );
