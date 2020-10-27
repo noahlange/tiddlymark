@@ -1,0 +1,9 @@
+! pretty
+
+Format-on-save hook, powered by [ext[prettier|https://prettier.io]]. Capable of
+re-formatting files of multiple types, including:
+
+* html, xml
+* markdown
+* typescript, javascript
+* css, scss, less, postcss

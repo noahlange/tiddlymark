@@ -2,12 +2,12 @@ import { format } from 'prettier/standalone';
 
 import html from 'prettier/parser-html';
 import markdown from 'prettier/parser-markdown';
-import babylon from 'prettier/parser-babylon';
+import babel from 'prettier/parser-babel';
 import typescript from 'prettier/parser-typescript';
 import postcss from 'prettier/parser-postcss';
-import { BuiltInParserName } from 'prettier';
+import type { BuiltInParserName } from 'prettier';
 
-const plugins = [markdown, postcss, babylon, typescript, html];
+const plugins = [markdown, postcss, babel, typescript, html];
 
 function parserFor(type: string): BuiltInParserName | null {
   switch (type) {
