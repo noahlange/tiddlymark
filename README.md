@@ -1,9 +1,5 @@
 # tiddlymark
 
-> The TiddlyWiki version is currently pinned at 5.1.21. Evidently I ran into
-> some compatibility issues at some point. I don't remember what they are; I'll
-> take another look.
-
 A server-based [TiddlyWiki](https://tiddlywiki.com/) distribution for improved
 Markdown support. Obviously, this makes liberal use of code loosely adapted from
 TiddlyWiki's source.
