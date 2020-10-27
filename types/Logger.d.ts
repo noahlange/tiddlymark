@@ -6,9 +6,9 @@ declare module '$:/core/modules/utils/logger.js' {
 
   export default class Logger {
     public log(message: string): void;
-    public table(value: any): void;
+    public table(value: unknown): void;
     public alert(...text: string[]): void;
 
-    constructor(componentName?: string, options?: LoggerOptions);
+    public constructor(componentName?: string, options?: LoggerOptions);
   }
 }

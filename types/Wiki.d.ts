@@ -1,67 +1,80 @@
-type TiddlerFilter = {};
+interface TiddlerFilter {}
 
-type GetTiddlersOptions = {
+interface GetTiddlersOptions {
   sortField: string;
   excludeTag: string;
   includeSystem: boolean;
-};
+}
 
 declare class Wiki {
-  static tiddlerDeserializerModules: Record<string, $FnFixMe>;
-  caches: Record<string, unknown>;
-  globalCache: Record<string, unknown>;
-  parsers: Record<string, { new (): Parser }>;
+  public static tiddlerDeserializerModules: Record<string, $FnFixMe>;
+  public caches: Record<string, unknown>;
+  public globalCache: Record<string, unknown>;
+  public parsers: Record<string, { new (): Parser }>;
 
-  addIndexersToWiki(): void;
-  getTextReference(
+  public addIndexersToWiki(): void;
+  public getTextReference(
     textRef: string,
     defaultText: string,
     currentTitle: string
   ): $AnyFixMe;
-  setTextReference(textRef: string, value: string, currentTitle: string): void;
-  /** Erase the indicated field from a tiddler. */
-  setText(title: string, field: string): void;
-  /** Modify the indicated field of a tiddler. */
-  setText(
+  public setTextReference(
+    textRef: string,
+    value: string,
+    currentTitle: string
+  ): void;
+
+  /**
+   * Erase the indicated field from a tiddler.
+   */
+  public setText(title: string, field: string): void;
+  /**
+   * Modify the indicated field of a tiddler.
+   */
+  public setText(
     title: string,
     field: string,
     value: $AnyFixMe,
     options?: { suppressTimestamp: boolean }
   ): void;
-  setText(
+  public setText(
     title: string,
     field: string,
     index: string,
     value?: $AnyFixMe,
     options?: { suppressTimestamp: boolean }
   ): void;
-  deleteTextReference(textRef: string, currentTitle: string): void;
 
-  addEventListener(type: string, listener: Callback): void;
-  removeEventListener(type: string, listener: Callback): void;
-  dispatchEvent(type: string, ...args: any[]): void;
+  public deleteTextReference(textRef: string, currentTitle: string): void;
 
-  enqueueTiddlerEvent(title: string, isDeleted?: boolean): void;
-  getSizeOfTiddlerEventQueue(): number;
-  getChangeCount(title: string): number;
-  generateNewTitle(baseTitle: string, options?: { prefix: string }): string;
+  public addEventListener(type: string, listener: Callback): void;
+  public removeEventListener(type: string, listener: Callback): void;
+  public dispatchEvent(type: string, ...args: unknown[]): void;
 
-  isSystemTiddler(title: string): boolean;
-  isTemporaryTiddler(title: string): boolean;
-  isImageTiddler(title: string): boolean;
-  importTiddler(tiddler: Tiddler): boolean;
+  public enqueueTiddlerEvent(title: string, isDeleted?: boolean): void;
+  public getSizeOfTiddlerEventQueue(): number;
+  public getChangeCount(title: string): number;
+  public generateNewTitle(
+    baseTitle: string,
+    options?: { prefix: string }
+  ): string;
 
-  getCreationFields(): TiddlerCreationFields;
-  getModificationFields(): TiddlerModificationFields;
+  public isSystemTiddler(title: string): boolean;
+  public isTemporaryTiddler(title: string): boolean;
+  public isImageTiddler(title: string): boolean;
+  public importTiddler(tiddler: Tiddler): boolean;
 
-  getTiddler<T = {}>(title: string): Tiddler<T>;
-  getTiddlers(options: GetTiddlersOptions): string[];
+  public getCreationFields(): TiddlerCreationFields;
+  public getModificationFields(): TiddlerModificationFields;
 
-  countTiddlers(excludeTag: string): number;
-  makeTiddlerIterator(
+  public getTiddler<T = unknown>(title: string): Tiddler<T>;
+  public getTiddlers(options: GetTiddlersOptions): string[];
+
+  public countTiddlers(excludeTag: string): number;
+  public makeTiddlerIterator(
     titles: string[]
   ): (tiddler: Tiddler, title: string) => void;
-  sortTiddlers(
+  public sortTiddlers(
     titles: string[],
     sortField: string,
     isDescending?: boolean,
@@ -70,69 +83,84 @@ declare class Wiki {
     isAlphaNumeric?: boolean
   ): string[];
 
-  forEachTiddler(
+  public forEachTiddler(
     options: GetTiddlersOptions,
     callback: (title: string, tiddler: Tiddler) => void
   ): void;
-  getTiddlerLinks(title: string): string[];
-  getMissingTitles(): Record<string, number>;
-  getOrphanTitles(): string[];
-  getTiddlersWithTag(tag: string): string[];
-  getTagMap(): Record<string, string[]>;
-  findListingsOfTiddler(title: string, field?: string): string[];
-  sortByList(titles: string[], list: string[]): string[];
-  getSubTiddler(title: string, subTitle: string): Tiddler | null;
-  getTiddlerAsJson(title: string): string;
-  getTiddlersAsJson(filter: TiddlerFilter): string;
-  getTiddlerDataCached<T = TiddlerFields, F = {}>(
+  public getTiddlerLinks(title: string): string[];
+  public getMissingTitles(): Record<string, number>;
+  public getOrphanTitles(): string[];
+  public getTiddlersWithTag(tag: string): string[];
+  public getTagMap(): Record<string, string[]>;
+  public findListingsOfTiddler(title: string, field?: string): string[];
+  public sortByList(titles: string[], list: string[]): string[];
+  public getSubTiddler(title: string, subTitle: string): Tiddler | null;
+  public getTiddlerAsJson(title: string): string;
+  public getTiddlersAsJson(filter: TiddlerFilter): string;
+  public getTiddlerDataCached<T = TiddlerFields, F = unknown>(
     titleOrTiddler: string | Tiddler<T>,
     fallback?: F
   ): T | F;
 
-  getTiddlerData<T = TiddlerFields>(title: string): T | undefined;
-  getTiddlerData<T = TiddlerFields, F = {}>(title: string, fallback: F): T | F;
-  getTiddlerData<T = TiddlerFields, F = {}>(
+  public getTiddlerData<T = TiddlerFields>(title: string): T | undefined;
+  public getTiddlerData<T = TiddlerFields, F = unknown>(
+    title: string,
+    fallback: F
+  ): T | F;
+  public getTiddlerData<T = TiddlerFields, F = unknown>(
     title: string,
     fallback?: F
   ): T | F | undefined;
 
-  extractTiddlerDataItem(title: string, index: unknown, value: string): string;
-
-  setTiddlerData(
+  public extractTiddlerDataItem(
     title: string,
-    data: object,
+    index: unknown,
+    value: string
+  ): string;
+
+  public setTiddlerData(
+    title: string,
+    data: unknown,
     fields?: Partial<TiddlerFields>
   ): void;
 
-  getTiddlerList(title: string, field?: string, index?: unknown): string[];
-  getGlobalCache<T>(name: string, initializer: () => T): T;
-  clearGlobalCache(): void;
-  getCacheForTiddler<T>(title: string, name: string, initializer: () => T): T;
-  clearCache(title: string): void;
-  initParsers(moduleType?: string): void;
-  parseText(
+  public getTiddlerList(
+    title: string,
+    field?: string,
+    index?: unknown
+  ): string[];
+  public getGlobalCache<T>(name: string, initializer: () => T): T;
+  public clearGlobalCache(): void;
+  public getCacheForTiddler<T>(
+    title: string,
+    name: string,
+    initializer: () => T
+  ): T;
+  public clearCache(title: string): void;
+  public initParsers(moduleType?: string): void;
+  public parseText(
     type?: string,
     text?: string,
     options?: ParserOptions
   ): Parser | null;
-  parseTiddler(title: string, options?: ParserOptions): unknown;
-  parseTextReference(
+  public parseTiddler(title: string, options?: ParserOptions): unknown;
+  public parseTextReference(
     title: string,
     field: string,
     index: unknown,
     options: ParserOptions
   ): unknown;
 
-  getTiddlerText(title: string): string;
+  public getTiddlerText(title: string): string;
 
-  readPluginInfo(): void;
-  registerPluginTiddlers(name: string, paths?: string[]): void;
-  unpackPluginTiddlers(): void;
-  processSafeMode(): void;
-  defineTiddlerModules(): void;
-  defineShadowModules(): void;
+  public readPluginInfo(): void;
+  public registerPluginTiddlers(name: string, paths?: string[]): void;
+  public unpackPluginTiddlers(): void;
+  public processSafeMode(): void;
+  public defineTiddlerModules(): void;
+  public defineShadowModules(): void;
 
-  addTiddler(tiddler: Tiddler): void;
+  public addTiddler(tiddler: Tiddler): void;
 
-  filterTiddlers(filter: string): string[];
+  public filterTiddlers(filter: string): string[];
 }

@@ -1,4 +1,4 @@
 type $AnyFixMe = any;
-type $FnFixMe = Function;
+type $FnFixMe = (...args: unknown[]) => unknown | void;
 
 type Callback<R = unknown> = (e: Error | null, p?: R) => void;

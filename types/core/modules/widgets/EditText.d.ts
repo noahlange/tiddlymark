@@ -1,68 +1,3 @@
-declare module '$:/core/modules/editor/engines/framed.js' {
-  import {
-    EditTextEngine,
-    EditTextEngineOptions,
-    EditTextWidget,
-    TextOperation
-  } from '$:/core/modules/editor/factory.js';
-
-  export class FramedEngine implements EditTextEngine {
-    /*
-      Copy styles from the dummy text area to the textarea in the iframe
-    */
-    public copyStyles(): void;
-    /*
-      Set the text of the engine if it doesn't currently have focus
-    */
-    public setText(text: string, type: string): void;
-    /*
-      Get the text of the engine.
-    */
-    public getText(): string;
-    public fixHeight(): void;
-    public focus(): void;
-    public handleClickEvent(event: MouseEvent): boolean;
-    public handleInputEvent(event: Event): boolean;
-
-    public createTextOperation(): TextOperation;
-    public executeTextOperation(operation: TextOperation): void;
-
-    public widget: EditTextWidget;
-    public value: string;
-    public parentNode: HTMLElement;
-    public nextSibling: HTMLElement;
-    public domNode: HTMLElement;
-
-    public constructor(options: EditTextEngineOptions);
-  }
-}
-declare module '$:/core/modules/editor/engines/simple.js' {
-  import {
-    EditTextEngine,
-    EditTextEngineOptions,
-    EditTextWidget,
-    TextOperation
-  } from '$:/core/modules/editor/factory.js';
-
-  export class SimpleEngine implements EditTextEngine {
-    public constructor(options: EditTextEngineOptions);
-    public getText(): string;
-    public fixHeight(): void;
-    public focus(): void;
-    public handleFocusEvent(event?: FocusEvent): boolean;
-    public handleInputEvent(event: Event): boolean;
-
-    public createTextOperation(): null;
-    public executeTextOperation(operation: TextOperation): void;
-
-    public widget: EditTextWidget;
-    public value: string;
-    public parentNode: HTMLElement;
-    public nextSibling: HTMLElement;
-    public domNode: HTMLElement;
-  }
-}
-
 declare module '$:/core/modules/editor/factory.js' {
   import { widget as Widget } from '$:/core/modules/widgets/widget.js';
 
@@ -85,7 +20,7 @@ declare module '$:/core/modules/editor/factory.js' {
     domNode: HTMLElement;
   }
 
-  type TextOperation = {
+  interface TextOperation {
     selection: string;
     text: string;
     selStart: number;
@@ -95,27 +30,27 @@ declare module '$:/core/modules/editor/factory.js' {
     replacement: number | null;
     newSelStart: number | null;
     newSelEnd: number | null;
-  };
+  }
 
-  type EditInfo = {
+  interface EditInfo {
     update: (value: string) => void;
     type: string;
     value: string;
-  };
+  }
 
-  type EditTextOperationEvent = {
+  interface EditTextOperationEvent {
     param: string;
-  };
+  }
 
-  type EditTextEngineOptions = {
+  interface EditTextEngineOptions {
     widget: EditTextWidget;
     value: string;
     type: string;
     parentNode: HTMLElement;
     nextSibling: HTMLElement;
-  };
+  }
 
-  class EditTextWidget extends Widget<{}> {
+  class EditTextWidget extends Widget<unknown> {
     /** Render this widget into the DOM */
     public render(parent: HTMLElement, nextSibling: HTMLElement): void;
     /** Get the tiddler being edited and current value */
