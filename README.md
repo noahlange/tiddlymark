@@ -49,12 +49,13 @@ Also includes a few syntax extensions for:
 
 - HTML entities (e.g., `&rarr;`)
 - emojis (e.g., `:smile:`)
-- div containers (fences with `:::` instead of backticks)
+- ` <div>` containers (fences with `:::` instead of backticks)
 - subscript and superscript (e.g., `~sub~`, `^super^`)
-- inline and block macros (e.g., `<sayhi>`)
+- insert (`++ins++`)
+- inline and block macros (e.g., `<<sayhi>>`)
 
-Unlike the stock Markdown plugin, link targets and image sources don't require a
-preceding `#`.
+Unlike the stock Markdown plugin, link targets and image sources _don't_ require
+a preceding `#`.
 
 #### sass
 

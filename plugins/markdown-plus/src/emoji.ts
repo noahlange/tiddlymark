@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/camelcase */
 // from `node-emoji`, released under the MIT license
 // https://github.com/omnidan/node-emoji/blob/master/lib/emoji.json
 
-export default {
+const emoji: Record<string, string> = {
   '100': '💯',
   '1234': '🔢',
   grinning: '😀',
@@ -1484,3 +1483,5 @@ export default {
   zambia: '🇿🇲',
   zimbabwe: '🇿🇼'
 };
+
+export default emoji;
