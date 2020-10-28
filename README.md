@@ -13,28 +13,49 @@ half-baked TS types for TiddlyWiki as a whole.
 
 ## Quick Start
 
-```bash
-# clone repository
-git clone git@github.com:noahlange/tiddlymark.git && cd tiddlymark
-# install dependencies and build plugins
-npm install && npm run build
-# serve the contents of ./wiki using the aforementioned plugins
-node ./bin/serve ./wiki
+1. Clone repository:
+
+```
+$ git clone git@github.com:noahlange/tiddlymark.git
+$ cd tiddlymark
+```
+
+2. Install and generate plugins.
+
+```
+$ npm install
+$ npm run dist
+```
+
+3. Link boot script and start server.
+
+```
+$ npm link
+$ tiddlymark ./wiki
+```
+
+4. Optionally, symlink TiddlyWiki to make development easier.
+
+```
+$ ln -s "$(pwd)/node_modules/tiddlywiki" tiddlywiki
 ```
 
 ### Running the server
 
-I have no intention to get much of this running on the client; it operates with
-the assumption that you're running TiddlyWiki as a server on `localhost`.
+I have no intention to get much of this running in a client-only context; it
+really operates with the assumption that you're running TiddlyWiki as a server
+on `localhost`.
 
 Some peculiarities in how TiddlyWiki handles file loading/deserialization make
 custom deserializers inordinately difficult; these behaviors needed to be
 overwritten at the JS level.
 
 To get everything running properly, you'll need to run the CLI script in
-`bin/serve` or use the `tiddlymark` script. The updated CLI will add all the
-plugins in `./wiki/plugins`, create a deserializer tiddler if necessary and boot
-the server, using the user's git username as the wiki's anonymous username.
+`bin/serve` (or, after running `npm link`, use the `tiddlymark` command).
+
+The updated CLI will add all the plugins in `./wiki/plugins`, create a
+deserializer tiddler if necessary and boot the server, using the user's git
+username as the wiki's anonymous username.
 
 ### Included plugins
 
@@ -82,9 +103,10 @@ page template override to avoid inserting the SASS source as CSS.
 
 #### pretty
 
-Adds a save hoook to run [prettier](https://prettier.io) on HTML, Markdown,
+Adds a save hook to run [prettier](https://prettier.io) on XML, Markdown,
 JavaScript/TypeScript and CSS/SCSS/LESS/PostCSS on save. There's a slight pause
-upon save, but I'll take that over constantly formatting content.
+upon save, but I'll take that over having to manually reformat content and/or
+have it be ugly.
 
 #### monaco
 
@@ -98,7 +120,7 @@ standalone directory in `plugins` with a webpack config and `index.js` that
 serves as a "manifest" with the appropriate content and config.
 
 Plugins you'd like to keep in the `plugins` directory but don't want to build
-can be placed in directories prefixed with `.`. The build scripts will ignore
+can be placed in directories prefixed with `.`. The build tasks will ignore
 them.
 
 #### webpack.config.js
@@ -111,6 +133,10 @@ with the common `webpack.config.js` file at the project root. Things to note:
    should use `node` instead. That being said, that's not always the case—it can
    get a little complicated.
 2. Compiled files are dumped into `./build`.
+3. Use `require()` for runtime imports/exports (e.g., TiddlyWiki modules) and
+   ES6 imports for bundled libraries, &c. The semantics of TW's `require()` are
+   pretty close to standard CommonJS—any rate, I haven't run into any major
+   surprises.
 
 #### index.js
 
@@ -118,9 +144,12 @@ A plain JS file that exports an object roughly corresponding to the file
 structure of your plugin. Whatever the structure, the plugin's contents will
 always be nested under `$:/plugins`.
 
-Children of any given file are listed beneath `_`. Each key is a filename; the
-keys beneath it correspond to its contents (`text`) and metadata (the rest).
-Values need to be directly serializable to JSON or Promises of them.
+Any given tiddler is represented by as key in an object hash. Each key in _that_
+object represents a single data/metadata field. The values must be directly
+serializable to JSON—or Promises of objects directly serializable to JSON.
+
+The `_` key does not hold a metadata value, but instead is a container for
+nested tiddlers.
 
 #### Building plugins
 

@@ -11,8 +11,6 @@
   },
   "scripts": {
     "build": "webpack && node tasks",
-    "test": "jest",
-    "debug": "node --inspect-brk=9222 bin/serve ~/rpg/wiki/books",
     "dev": "npm run build && npm run start",
     "dist": "NODE_ENV=production npm run build",
     "lint": "eslint --fix '{plugins/!(.)*,tasks,types}/**/*.{js,ts}'",
