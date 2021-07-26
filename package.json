@@ -10,13 +10,15 @@
     "tiddlymark": "bin/serve"
   },
   "scripts": {
-    "build": "webpack && node tasks",
+    "build": "webpack --no-stats && node tasks/index.js",
     "dev": "npm run build && npm run start",
     "dist": "NODE_ENV=production npm run build",
+    "types": "tsc --noEmit",
     "lint": "eslint --fix '{plugins/!(.)*,tasks,types}/**/*.{js,ts}'",
     "pretty": "prettier --write '{plugins/!(.)*,tasks,types}/**/*.{js,ts}'"
   },
   "devDependencies": {
+    "@types/mkdirp": "^1.0.1",
     "@babel/core": "^7.8.7",
     "@babel/plugin-proposal-class-properties": "^7.10.4",
     "@babel/plugin-proposal-decorators": "^7.10.5",
@@ -35,7 +37,6 @@
     "@types/node": "^14.14.3",
     "@types/prettier": "^2.1.5",
     "@types/sass": "^1.16.0",
-    "@types/webpack": "^4.4.34",
     "@typescript-eslint/eslint-plugin": "^4.6.0",
     "@typescript-eslint/parser": "^4.6.0",
     "babel-loader": "^8.1.0",
@@ -45,7 +46,7 @@
     "eslint-plugin-prettier": "^3.1.4",
     "file-loader": "^6.1.1",
     "fs-extra": "^8.1.0",
-    "monaco-editor": "^0.21.2",
+    "monaco-editor": "^0.24.0",
     "ora": "^4.0.2",
     "prettier": "^2.1.2",
     "sass.js": "^0.11.1",
@@ -60,6 +61,7 @@
   },
   "dependencies": {
     "gray-matter": "^4.0.2",
-    "tiddlywiki": "5.1.21"
+    "mkdirp": "^0.5.5",
+    "tiddlywiki": "5.1.23"
   }
 }
