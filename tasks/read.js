@@ -1,5 +1,4 @@
-const { resolve, relative } = require('path');
-const { homedir } = require('os');
+const { resolve } = require('path');
 const { promises: fs, statSync } = require('fs');
 
 async function parsePlugin(data, path = '$:') {
@@ -30,7 +29,6 @@ async function readPlugin(name) {
 
 module.exports = async function read(spinner) {
   const dir = resolve(__dirname, '../plugins');
-  const rel = relative(homedir(), dir);
 
   spinner.prefixText = 'read';
 
@@ -48,7 +46,7 @@ module.exports = async function read(spinner) {
     )
     .catch(e => console.error(e));
 
-  spinner.text = `read ${res.length} plugins from "~/${rel}"`;
+  spinner.text = `read ${res.length} plugins from "${dir}"`;
   spinner.succeed();
 
   return res;
