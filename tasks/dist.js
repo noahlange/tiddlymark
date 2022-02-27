@@ -9,7 +9,7 @@ module.exports = async function dist(spinner, plugins) {
   spinner.start();
 
   const dir = resolve(__dirname, '../plugins/.dist');
-  const out = resolve(__dirname, './wiki/plugins');
+  const out = resolve(__dirname, '../wiki/plugins');
 
   await Promise.all(
     plugins.map(async plugin => {
@@ -21,7 +21,7 @@ module.exports = async function dist(spinner, plugins) {
     })
   );
 
-  await copy('./plugins/.dist', './wiki/plugins', opts);
+  await copy(dir, out, opts);
 
   spinner.text = `wrote ${plugins.length} plugins to "${out}"`;
   spinner.succeed();
