@@ -8,8 +8,8 @@ interface GetTiddlersOptions {
 
 declare class Wiki {
   public static tiddlerDeserializerModules: Record<string, $FnFixMe>;
-  public caches: Record<string, unknown>;
-  public globalCache: Record<string, unknown>;
+  public caches: UnknownRecord;
+  public globalCache: UnknownRecord;
   public parsers: Record<string, { new (): Parser }>;
 
   public addIndexersToWiki(): void;
@@ -67,7 +67,9 @@ declare class Wiki {
   public getCreationFields(): TiddlerCreationFields;
   public getModificationFields(): TiddlerModificationFields;
 
-  public getTiddler<T = unknown>(title: string): Tiddler<T>;
+  public getTiddler<T extends UnknownRecord = UnknownRecord>(
+    title: string
+  ): Tiddler<T>;
   public getTiddlers(options: GetTiddlersOptions): string[];
 
   public countTiddlers(excludeTag: string): number;
@@ -151,7 +153,7 @@ declare class Wiki {
     options: ParserOptions
   ): unknown;
 
-  public getTiddlerText(title: string): string;
+  public getTiddlerText(title: string, defaultValue?: string): string;
 
   public readPluginInfo(): void;
   public registerPluginTiddlers(name: string, paths?: string[]): void;

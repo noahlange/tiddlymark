@@ -6,12 +6,17 @@ module.exports = {
       {
         targets: {
           node: 'current',
-          browsers: ['last 2 Firefox versions', 'last 2 Chrome versions']
+          browsers: [
+            'last 2 Firefox versions',
+            'last 2 Chrome versions',
+            'last 2 Safari versions'
+          ]
         }
       }
     ]
   ],
   plugins: [
+    ['@babel/plugin-proposal-private-methods', { loose: true }],
     ['@babel/plugin-proposal-decorators', { legacy: true }],
     ['@babel/plugin-proposal-class-properties', { loose: true }],
     '@babel/plugin-proposal-export-namespace-from',

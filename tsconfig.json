@@ -13,10 +13,11 @@
     "target": "es2020"
   },
   "include": [
-    "./types/**/*.d.ts",
-    "./plugins/**/*.ts",
-    "./plugins/**/*.js",
-    "./tasks/**/*.js",
-    "package.json"
+    "./types/**/*",
+    "./plugins/**/*"
+  ],
+  "exclude": [
+    "./tasks/**/*",
+    "node_modules"
   ]
 }

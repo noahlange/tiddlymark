@@ -39,7 +39,7 @@ function makeTextRefWithoutTemplate(
   field?: string,
   index?: string
 ): WidgetNode {
-  const attributes = {
+  const attributes: Record<string, { type: string; value?: string }> = {
     tiddler: { type: 'string', value: title },
     field: { type: 'string', value: field },
     index: { type: 'string', value: index }

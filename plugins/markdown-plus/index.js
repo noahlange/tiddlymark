@@ -34,8 +34,10 @@ module.exports = {
               readme: {
                 text: fs.readFile(resolve(__dirname, './README.md'), 'utf8')
               },
-              usage:
-                '! Usage\n\n!! Subscript & Superscript\n\n```markdown\nCO~2~\nmc^2^\n```\n\n!! Emoji & HTML entities\n\n```markdown\n:smile:\n&rarr;\n```\n\n!! Blocks\nInspired by [[markdown-it-container|https://github.com/markdown-it/markdown-it-container]], blocks behave like fenced code, but their contents are rendered as Markdown. Text immediately following the `:::` is trimed and added as to the class list of the resulting `div` element.\n\n```markdown\n::: foo\n\n_Italicized text._\n\n:::\n```\n\n!! Macros\nNormal syntax applies here.\n\n```markdown\n<<say-hi>>\n```',
+              usage: {
+                text:
+                  '! Usage\n\n!! Subscript & Superscript\n\n```markdown\nCO~2~\nmc^2^\n```\n\n!! Emoji & HTML entities\n\n```markdown\n:smile:\n&rarr;\n```\n\n!! Blocks\nInspired by [[markdown-it-container|https://github.com/markdown-it/markdown-it-container]], blocks behave like fenced code, but their contents are rendered as Markdown. Text immediately following the `:::` is trimed and added as to the class list of the resulting `div` element.\n\n```markdown\n::: foo\n\n_Italicized text._\n\n:::\n```\n\n!! Macros\nNormal syntax applies here.\n\n```markdown\n<<say-hi>>\n```'
+              },
               'markdown-plus.js': {
                 'module-type': 'parser',
                 type: 'application/javascript',

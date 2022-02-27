@@ -1,5 +1,5 @@
 declare module '$:/core/modules/utils/edition-info.js' {
-  export function getEditionInfo(): Record<string, unknown>;
+  export function getEditionInfo(): UnknownRecord;
 }
 
 declare module '$:/core/modules/utils/csv.js' {
@@ -8,7 +8,7 @@ declare module '$:/core/modules/utils/csv.js' {
   }
 
   export function parseCsvStringWithHeader<
-    T extends Record<string, unknown> = Record<string, unknown>
+    T extends UnknownRecord = UnknownRecord
   >(text: string, options: CSVParseOptions): T[];
 }
 
@@ -70,7 +70,7 @@ declare module '$:/core/modules/utils/fakedom.js' {
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore; see implementation.
-    public get style(): Record<string, unknown>;
+    public get style(): UnknownRecord;
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore; " "
     public set style(value: string);

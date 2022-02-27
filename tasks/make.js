@@ -1,10 +1,16 @@
 const { join } = require('path');
 const { timestampFor } = require('./utils');
-const { author, version, repository } = require('../package.json');
+const {
+  author,
+  version,
+  repository,
+  dependencies
+} = require('../package.json');
 
 const ts = timestampFor(new Date());
 const name = author.replace(/(<.+>)/, '');
 const namespace = name.replace(/\s/g, '').toLowerCase();
+const tw = dependencies.tiddlywiki.replace('^', '');
 
 const info = {
   created: ts,
@@ -31,9 +37,8 @@ module.exports = function make(spinner, plugins) {
   spinner.prefixText = 'make';
 
   const res = plugins.map(plugin => {
-    spinner.text = `making plugin ${plugin.name}`;
-
     const tiddlers = tiddlersFrom(plugin);
+    spinner.text = `making plugin ${plugin.name}`;
 
     return {
       name: plugin.name,
@@ -42,7 +47,7 @@ module.exports = function make(spinner, plugins) {
           title: join(`$:/plugins/${namespace}/${plugin.name}`),
           ...info,
           ...plugin.meta,
-          'core-version': '>=5.1.21',
+          'core-version': `>=${tw}`,
           'plugin-type': 'plugin',
           type: 'application/json',
           version,

@@ -3,7 +3,6 @@ declare module '$:/core/modules/commander.js' {
     execute(): null;
     new (params: string[], commander: Commander): Command;
   }
-
   export interface CommandInfo {
     name: string;
     synchronous: boolean;
@@ -33,7 +32,7 @@ declare module '$:/core/modules/commander.js' {
     public extractNamedParameters(
       params: string[],
       mandatoryParams: string[]
-    ): Record<string, unknown> | string;
+    ): UnknownRecord | string;
 
     public constructor(
       commandTokens: string[],

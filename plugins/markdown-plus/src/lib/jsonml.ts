@@ -99,12 +99,14 @@ export function table(
 
   const tbody: JSONMLNode = [
     'tbody',
-    ...node.cells.map((row: SingleASTNode[]) => {
-      const cols = row.map((content: SingleASTNode, i) => {
-        return ['td', { style: style(i) }, ...output(content, state)];
-      });
-      return ['tr', ...cols];
-    })
+    ...node.cells.map((row: SingleASTNode[]) => [
+      'tr',
+      ...row.map((content: SingleASTNode | SingleASTNode[], i) => [
+        'td',
+        { style: style(i) },
+        ...output(content, state)
+      ])
+    ])
   ];
 
   return ['table', thead, tbody] as JSONMLNode;

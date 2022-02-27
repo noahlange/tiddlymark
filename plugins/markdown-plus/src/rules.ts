@@ -60,6 +60,10 @@ const newRules: JSONMLRules = {
     ...rules.blockQuote,
     jsonml: jsonml.blockquote
   },
+  tableSeparator: {
+    ...rules.tableSeparator,
+    jsonml: () => []
+  },
   block: {
     match: blockRegex(/^ *(?::{3})\s?([^\n]*)\n{1,}([\s\S]+?)\s*(?::{3})/),
     // match: blockRegex(/^ *(:{3,}) *(\S+)? *\n([\s\S]+?)\s*\1 *(?:\n *)+\n/),

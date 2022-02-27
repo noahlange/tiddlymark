@@ -1,11 +1,17 @@
 type ModuleType = 'command' | 'saver';
 type PluginType = '';
+interface UnknownRecord {
+  [key: string]: unknown;
+}
 
 interface GenerateFilepathOptions {
+  extension?: string;
   directory: string;
   pathFilters: string[];
-  extension?: string;
   wiki?: Wiki;
+  fileInfo: FileInfo;
+  originalpath: string;
+  extFilters?: string[];
 }
 
 interface ParsedTextReference {
@@ -36,6 +42,13 @@ type TerminalColour =
   | 'light gray';
 
 interface WikiUtils {
+  // @todo
+  generateTiddlerExtension(...args: any[]): any;
+  getFileExtensionInfo(...args: any[]): any;
+  getTypeEncoding(...args: any[]): string;
+  cleanupTiddlerFiles(options: any, callback: Callback): void;
+  deleteTiddlerFile(info: FileInfo, callback: Callback<null>): void;
+
   /**
    * Parse a text reference of one of these forms:
    * ```
@@ -100,17 +113,17 @@ interface WikiUtils {
   /**
    * Return the number of enumerable string properties/methods in an object.
    */
-  count(object?: Record<string, unknown>): number;
+  count(object?: UnknownRecord): number;
 
   /**
    * Determine if a field is a property of an object.
    */
-  hop(object: Record<string, unknown>, field: string): boolean;
+  hop(object: UnknownRecord, field: string): boolean;
 
   /**
    * Determine if some item of an array is a property of the given object.
    */
-  hopArray(object: Record<string, unknown>, array: string[]): boolean;
+  hopArray(object: UnknownRecord, array: string[]): boolean;
 
   /**
    * Remove one or more values from an array.
@@ -120,15 +133,12 @@ interface WikiUtils {
   /**
    * Determine if `objectA` shares any field names with `objectB`.
    */
-  checkDependencies(
-    objectA: Record<string, unknown>,
-    objectB: Record<string, unknown>
-  ): boolean;
+  checkDependencies(objectA: UnknownRecord, objectB: UnknownRecord): boolean;
 
   /**
    * Copy the values of all keys within the prototype chains of `src` to `object`.
    */
-  extend<T>(object: T, ...src: Array<Record<string, unknown>>): T;
+  extend<T>(object: T, ...src: UnknownRecord[]): T;
 
   /**
    * Recursively copy an object.
@@ -161,13 +171,13 @@ interface WikiUtils {
 }
 
 interface WikiModules {
-  types: Record<string, unknown>;
-  titles: Record<string, unknown>;
+  types: UnknownRecord;
+  titles: UnknownRecord;
 
   /**
    * Execute module `name` within sandbox, optionally relative to module `root`.
    */
-  execute(name: string, root?: string): Record<string, unknown>;
+  execute(name: string, root?: string): UnknownRecord;
 
   /**
    * Executes `callback` on the `title` and `exports` of each module of a specified `type`.
@@ -180,18 +190,18 @@ interface WikiModules {
     /**
      * Function to be called on each module.
      */
-    callback: (title: string, exports: Record<string, unknown>) => void
+    callback: (title: string, exports: UnknownRecord) => void
   ): void;
 
   /**
    * Returns the titles of all modules of a given type and their exports.
    */
-  getModulesByTypeAsHashmap(): Record<string, Record<string, unknown>>;
+  getModulesByTypeAsHashmap(): Record<string, UnknownRecord>;
 
   /**
    * Attach to the target object the exports of all modules with a given type
    */
-  applyMethods<T extends Record<string, unknown>>(type: string, target?: T): T;
+  applyMethods<T extends UnknownRecord>(type: string, target?: T): T;
 
   /**
    * For each module of a specified type, instantiate an object using the provided constructor.
@@ -208,7 +218,7 @@ interface TiddlyWiki {
     updateCryptoStateTiddler(): void;
   };
   safeMode: boolean;
-  packageInfo: Record<string, unknown>;
+  packageInfo: UnknownRecord;
   preloadTiddlers: boolean;
   passwordPrompt: $AnyFixMe;
   wiki: Wiki;
@@ -264,4 +274,3 @@ interface TiddlyWiki {
 }
 
 declare let $tw: TiddlyWiki;
-declare let exports: Record<string, unknown>;

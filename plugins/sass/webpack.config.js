@@ -14,7 +14,8 @@ module.exports = [
       'sass/hook': resolve(__dirname, './src/hook.ts')
     },
     node: {
-      __dirname: 'mock'
+      __dirname: 'mock',
+      __filename: 'mock'
     },
     externals: [
       /crypto/,

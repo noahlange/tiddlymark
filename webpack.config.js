@@ -18,8 +18,12 @@ const config = {
   module: {
     rules: [
       {
-        test: /\.(png|jpg|gif|ttf)$/i,
+        test: /\.(png|jpg|gif)$/i,
         use: [{ loader: 'url-loader', options: { limit: 8192 } }]
+      },
+      {
+        test: /\.ttf$/i,
+        use: [{ loader: 'url-loader' }]
       },
       {
         test: /\.css$/,

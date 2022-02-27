@@ -50,7 +50,7 @@ declare module '$:/core/modules/editor/factory.js' {
     nextSibling: HTMLElement;
   }
 
-  class EditTextWidget extends Widget<unknown> {
+  class EditTextWidget extends Widget<UnknownRecord> {
     /** Render this widget into the DOM */
     public render(parent: HTMLElement, nextSibling: HTMLElement): void;
     /** Get the tiddler being edited and current value */

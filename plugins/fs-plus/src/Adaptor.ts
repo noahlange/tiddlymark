@@ -1,14 +1,18 @@
-import { promises as fs } from 'fs';
+import * as fs from 'fs/promises';
 import { dirname } from 'path';
 import matter from 'gray-matter';
+import mkdirp from 'mkdirp';
 
 interface FSPlusAdaptorOptions {
   wiki: Wiki;
+  boot: typeof $tw.boot;
 }
 
 class Adaptor {
   public name = 'fs-plus';
+  public supportsLazyLoading = false;
   public wiki: Wiki;
+  public boot: typeof $tw.boot;
   public logger = new $tw.utils.Logger('fs-plus', { colour: 'blue' });
 
   /*
@@ -21,22 +25,30 @@ class Adaptor {
     tiddler: Tiddler,
     fileInfo: FileInfo,
     callback?: Callback
-  ): Promise<void> {
+  ): Promise<FileInfo> {
     const { stringify } = matter;
 
-    $tw.utils.createDirectory(dirname(fileInfo.filepath));
+    const title = tiddler.fields.title as string;
+    const text = tiddler.fields.text as string;
+    const type = tiddler.fields.type as string;
 
     try {
+      const dir = dirname(fileInfo.filepath);
+
+      await mkdirp(dir);
+
       if (fileInfo.hasMetaFile) {
         // Save the tiddler as a separate body and meta file
-        const typeInfo = $tw.config.contentTypeInfo[
-          tiddler.fields.type || 'text/plain'
-        ] || { encoding: 'utf8' };
+        const typeInfo = $tw.config.contentTypeInfo[type ?? 'text/plain'] ?? {
+          encoding: 'utf8'
+        };
+
         await fs.writeFile(
           fileInfo.filepath,
-          tiddler.fields.text,
-          typeInfo.encoding
+          text?.toString() ?? '',
+          typeInfo.encoding as BufferEncoding
         );
+
         await fs.writeFile(
           fileInfo.filepath + '.meta',
           tiddler.getFieldStringBlock({ exclude: ['text', 'bag'] }),
@@ -56,15 +68,20 @@ class Adaptor {
           }
           case 'text/x-markdown': {
             const { text, ...fields } = tiddler.getFieldStrings();
-            await fs.writeFile(
-              fileInfo.filepath,
-              stringify(text || '' + '\n', {
-                ...fields,
-                created: fields.created,
-                modified: fields.modified
-              }),
-              'utf8'
-            );
+            await fs
+              .writeFile(
+                fileInfo.filepath,
+                stringify(text || '' + '\n', {
+                  ...fields,
+                  created: fields.created,
+                  modified: fields.modified
+                }),
+                'utf8'
+              )
+              .catch(e => {
+                console.error(e);
+                console.log(fileInfo);
+              });
             break;
           }
           default: {
@@ -78,15 +95,14 @@ class Adaptor {
           }
         }
       }
-      if (callback) {
-        callback(null);
-      }
     } catch (e) {
-      this.logger.log(`saveTiddlerToFile: ${e.message}`);
+      console.error(e);
       if (callback) {
         callback(e);
       }
     }
+
+    return $tw.boot.files[title];
   }
 
   /*
@@ -114,7 +130,8 @@ class Adaptor {
       }
     );
 
-    const { type, title } = tiddler.fields;
+    const title = tiddler.fields.title as string;
+    const type = tiddler.fields.type as string;
 
     const info = hasUnsafeFields
       ? { type: 'application/json', hasMetaFile: false }
@@ -123,10 +140,42 @@ class Adaptor {
       : { type: 'application/x-tiddler', hasMetaFile: false };
 
     const contentType = $tw.config.contentTypeInfo[info.type];
-    const extension =
+
+    let extension =
       contentType && !title.endsWith(contentType.extension)
         ? contentType.extension
         : undefined;
+
+    if (options.extFilters?.length) {
+      // Check for extension override
+      const tmp = $tw.utils.generateTiddlerExtension(tiddler.fields.title, {
+        extFilters: options.extFilters,
+        wiki: options.wiki
+      });
+
+      if (extension) {
+        extension = tmp;
+        switch (extension) {
+          case '.tid': {
+            info.type = 'application/x-tiddler';
+            info.hasMetaFile = false;
+            break;
+          }
+          case '.json': {
+            info.type = 'application/json';
+            info.hasMetaFile = false;
+            break;
+          }
+          default: {
+            //If the new type matches a known extention, use that MIME type's encoding
+            const extInfo = $tw.utils.getFileExtensionInfo(extension);
+            extInfo.type = extInfo ? extInfo.type : null;
+            extInfo.encoding = $tw.utils.getTypeEncoding(extension);
+            extInfo.hasMetaFile = true;
+          }
+        }
+      }
+    }
 
     return {
       ...info,
@@ -154,20 +203,51 @@ class Adaptor {
     */
   public async saveTiddler(
     tiddler: Tiddler,
-    callback?: Callback
-  ): Promise<void> {
-    this.logger.log(`saving tiddler: ${tiddler.fields.title}`);
+    callback?: Callback<FileInfo>
+  ): Promise<FileInfo> {
+    const title = tiddler.fields.title as string;
+    this.logger.log(`saving tiddler: ${title}`);
+
     try {
       const info = this.getTiddlerFileInfo(tiddler);
-      await this.saveTiddlerToFile(tiddler, info);
+      const res = await this.saveTiddlerToFile(tiddler, info);
+
+      await new Promise<void>((resolve, reject) =>
+        $tw.utils.cleanupTiddlerFiles(
+          {
+            adaptorInfo: $tw.syncer.tiddlerInfo[title]?.adaptorInfo ?? {},
+            bootInfo: this.boot.files[title] ?? {},
+            title
+          },
+          e => (e ? reject(e) : resolve())
+        )
+      ).catch(e => console.error(e));
+
       if (callback) {
-        callback(null, null);
+        callback(null, res);
       }
+
+      return res;
     } catch (e) {
+      if (
+        e &&
+        (e.code === 'EPERM' || e.code === 'EACCES') &&
+        e.syscall === 'open'
+      ) {
+        const info = $tw.boot.files[title];
+        info.writeError = true;
+        $tw.boot.files[title] = info;
+        $tw.syncer.displayError(
+          `Sync for tiddler "${title}" will be retried with encoded filepath`,
+          encodeURIComponent(info.filepath)
+        );
+      }
+
       this.logger.log(`Error: ${e.message}`);
       if (callback) {
         callback(e);
       }
+      // throw e;
     }
   }
 
@@ -189,10 +269,11 @@ class Adaptor {
         }
       }
     } catch (e) {
+      this.logger.log(`Error: ${e.message}`);
       if (callback) {
         return callback(e);
       } else {
-        this.logger.log(`Error: ${e.message}`);
+        throw e;
       }
     }
   }
@@ -205,16 +286,30 @@ class Adaptor {
     callback?: Callback
   ): Promise<void> {
     try {
-      const info = $tw.boot.files[title];
+      const info = this.boot.files[title];
       // Only delete the tiddler if we have writable information for the file
       if (info) {
-        // Delete the file
-        await fs.unlink(info.filepath);
-        // Delete the metafile if present
-        if (info.hasMetaFile) {
-          await fs.unlink(info.filepath + '.meta');
-        }
-        await this.deleteEmptyDirs(dirname(info.filepath), callback);
+        await new Promise<void>((resolve, reject) => {
+          $tw.utils.deleteTiddlerFile(info, e => {
+            if (e) {
+              if (
+                (e.code === 'EPERM' || e.code === 'EACCES') &&
+                e.syscall === 'unlink'
+              ) {
+                // Error deleting the file on disk, should fail gracefully
+                $tw.syncer.displayError(
+                  'Server desynchronized. Error deleting file for deleted tiddler: ' +
+                    title,
+                  e
+                );
+                resolve();
+              } else {
+                reject(e);
+              }
+            }
+            resolve();
+          });
+        });
       }
       if (callback) {
         callback(null);
@@ -223,6 +318,8 @@ class Adaptor {
       this.logger.log(`Error: ${e.message}`);
       if (callback) {
         callback(e);
+      } else {
+        throw e;
       }
     }
   }
@@ -245,33 +342,36 @@ class Adaptor {
     callback?: Callback<FileInfo>
   ): FileInfo | void {
     try {
-      const wiki = this.wiki;
       // See if we've already got information about this file
-      const title = tiddler.fields.title;
-      let info = $tw.boot.files[title];
+      const title = tiddler.fields.title as string;
+      const filters = this.wiki.getTiddlerText('$:/config/FileSystemPaths');
+      const exts = this.wiki.getTiddlerText('$:/config/FileSystemExtensions');
 
-      if (!info) {
-        const filters = wiki.getTiddlerText('$:/config/FileSystemPaths') || '';
+      // Otherwise, we'll need to generate it
+      const tmp = this.generateTiddlerFileInfo(tiddler, {
+        directory: this.boot.wikiTiddlersPath,
+        pathFilters: filters?.split('\n').filter(f => !!f),
+        extFilters: exts?.split('\n').filter(f => !!f),
+        wiki: this.wiki,
+        fileInfo: this.boot.files[title],
+        originalpath: this.wiki.extractTiddlerDataItem(
+          '$:/config/OriginalTiddlerPaths',
+          title,
+          ''
+        )
+      });
 
-        // Otherwise, we'll need to generate it
-        const tmp = this.generateTiddlerFileInfo(tiddler, {
-          directory: $tw.boot.wikiTiddlersPath,
-          pathFilters: filters.split('\n'),
-          wiki
-        });
+      const notMarkdown = tmp.type !== 'text/x-markdown';
+      const hasMetaFile =
+        tmp.type !== 'application/x-tiddler' &&
+        tmp.type !== 'application/json' &&
+        notMarkdown;
 
-        const notMarkdown = tmp.type !== 'text/x-markdown';
-        const hasMetaFile =
-          tmp.type !== 'application/x-tiddler' &&
-          tmp.type !== 'application/json' &&
-          notMarkdown;
-
-        info = $tw.boot.files[title] = {
-          ...tmp,
-          hasMetaFile,
-          extension: !hasMetaFile && notMarkdown ? '.tid' : tmp.extension
-        };
-      }
+      const info = (this.boot.files[title] = {
+        ...tmp,
+        hasMetaFile,
+        extension: !hasMetaFile && notMarkdown ? '.tid' : tmp.extension
+      });
 
       if (callback) {
         callback(null, info);
@@ -282,12 +382,15 @@ class Adaptor {
       this.logger.log(`Error: ${e.message}`);
       if (callback) {
         callback(e);
+      } else {
+        throw e;
       }
     }
   }
 
-  public getTiddlerInfo(): Record<string, unknown> {
-    return {};
+  public getTiddlerInfo(tiddler: Tiddler): FileInfo | null {
+    const title = tiddler.fields.title;
+    return title ? this.boot.files[title] : null ?? null;
   }
 
   public isReady(): boolean {
@@ -296,6 +399,7 @@ class Adaptor {
 
   public constructor(options: FSPlusAdaptorOptions) {
     this.wiki = options.wiki;
+    this.boot = options.boot ?? $tw.boot;
     // Create the <wiki>/tiddlers folder if it doesn't exist
     $tw.utils.createDirectory($tw.boot.wikiTiddlersPath);
   }

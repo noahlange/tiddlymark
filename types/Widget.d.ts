@@ -2,7 +2,7 @@ interface WidgetNode {
   type: string;
   start?: number;
   value?: string | WidgetNode;
-  attributes: Record<string, unknown>;
+  attributes: UnknownRecord;
   tag?: string;
   end?: number;
   isBlock?: boolean;
@@ -48,7 +48,7 @@ declare module '$:/core/modules/widgets/widget.js' {
     type: string;
   }
 
-  class Widget<A = Record<string, unknown>, T = A & BaseWidgetAttributes> {
+  class Widget<A = UnknownRecord, T = A & BaseWidgetAttributes> {
     public parseTreeNode: WidgetNode;
     public parentWidget: Widget;
     public wiki: Wiki;
@@ -56,7 +56,7 @@ declare module '$:/core/modules/widgets/widget.js' {
     public attributes: T;
     public children: Widget[];
     public domNodes: HTMLElement[];
-    public eventListeners: Record<string, unknown>;
+    public eventListeners: UnknownRecord;
 
     public widgetClasses?: Record<string, typeof Widget>;
 

@@ -1,5 +1,5 @@
-import * as Sass from '$:/plugins/noahlange/sass/sass.js';
-const title = '$:/plugins/noahlange/sass/sass-styles.css';
+import * as sass from '$:/plugins/noahlange/sass/sass.js';
+const cache = '$:/plugins/noahlange/sass/sass-styles.css';
 
 function cacheToStyles(cache: Record<string, string>): string {
   return Object.entries(cache).reduce((a, [key, value]) => {
@@ -11,13 +11,14 @@ export function startup(): void {
   $tw.hooks.addHook('th-saving-tiddler', (tiddler: Tiddler): Tiddler | null => {
     let result: Tiddler | null = tiddler;
     const isStylesheet = tiddler.hasTag('$:/tags/Stylesheet');
-    const isSASS = /text\/s(c|a)ss/gim.test(tiddler.fields.type);
+    const isSASS = /text\/s(c|a)ss/gim.test(tiddler.fields.type as string);
     if (isStylesheet && isSASS) {
-      Sass.compile(tiddler.fields.text)
+      sass
+        .compile(tiddler.fields.text as string)
         .then(text => {
-          const css = $tw.wiki.getTiddler<{ cache: string }>(title);
+          const css = $tw.wiki.getTiddler<{ cache: string }>(cache);
           const parsed = JSON.parse(css.fields.cache || '{}');
-          parsed[tiddler.fields.title] = text;
+          parsed[tiddler.fields.title as string] = text;
           $tw.wiki.addTiddler(
             new $tw.Tiddler(css, {
               text: cacheToStyles(parsed),

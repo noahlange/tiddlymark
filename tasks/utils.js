@@ -1,5 +1,5 @@
 /**
- * given a string of key-value metadata pairs, return a POJO.
+ * given a string of TiddlyWiki-style key-value pairs, return a POJO.
  */
 function parse(str) {
   return str

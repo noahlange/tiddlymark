@@ -48,17 +48,15 @@ export class MonacoEngine implements EditTextEngine {
   }
 
   public setText(text: string, type: string): void {
-    let m = this.monaco.getModel();
     const l = langFrom(type);
-    if (m) {
-      if (!this.monaco.hasWidgetFocus()) {
-        monaco.editor.setModelLanguage(m, l);
-        m.setValue(text);
-      }
-    } else {
-      m = monaco.editor.createModel(text, l);
+    const m = this.monaco.getModel() ?? monaco.editor.createModel(text, l);
+
+    if (!this.monaco.hasWidgetFocus()) {
+      monaco.editor.setModelLanguage(m, l);
+      m.setValue(text);
       this.monaco.setModel(m);
     }
+
     m.updateOptions({ tabSize: 2 });
   }
 
@@ -91,10 +89,16 @@ export class MonacoEngine implements EditTextEngine {
       model.onDidChangeContent(() => {
         this.widget.saveChanges(this.getText());
       });
-      this.monaco.onKeyDown(e => {
-        this.widget.handleKeydownEvent(e.browserEvent);
-      });
     }
+    this.monaco.onKeyDown(e => {
+      this.widget.handleKeydownEvent(e.browserEvent);
+    });
+
+    // this.monaco.onDidFocusEditorWidget(() => {
+    //   if (this.widget.editCancelPopups) {
+    //     $tw.popup.cancel(0);
+    //   }
+    // });
   }
 
   protected async makeEditor(): Promise<void> {

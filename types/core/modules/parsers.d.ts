@@ -18,7 +18,9 @@ type TextFile =
   | 'application/javascript'
   | 'application/json'
   | 'text/css'
-  | 'application/x-tiddler-dictionary';
+  | 'application/x-tiddler-dictionary'
+  | string;
+
 type ImageFile =
   | 'image/svg+xml'
   | 'image/jpg'
@@ -28,7 +30,8 @@ type ImageFile =
   | 'image/webp'
   | 'image/heic'
   | 'image/heif'
-  | 'image/x-icon';
+  | 'image/x-icon'
+  | string;
 
 declare module '$:/core/modules/parsers/audioparser.js' {
   const exports: Record<AudioFile, Parser>;
@@ -76,10 +79,7 @@ declare module '$:/core/modules/parsers/wikiparser/wikiparser.js' {
 
   class TiddlyWikiParser {
     public loadRemoteTiddler(url: string): void;
-    public setupRules(
-      proto: Record<string, unknown>,
-      configPrefix: string
-    ): void;
+    public setupRules(proto: UnknownRecord, configPrefix: string): void;
     public instantiateRules(
       classes: string[],
       type: string,

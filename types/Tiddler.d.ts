@@ -20,21 +20,26 @@ interface TiddlerTextFields {
   bag: string;
 }
 
+type Fields = TiddlerTextFields &
+  TiddlerModificationFields &
+  TiddlerCreationFields;
+
 /**
  * Union type of standard tiddler fields.
  */
-type TiddlerFields = TiddlerTextFields &
-  TiddlerModificationFields &
-  TiddlerCreationFields;
+type TiddlerFields<K extends keyof Fields = keyof Fields> = Record<
+  K,
+  Fields[K]
+>;
 
 interface FieldStringOptions<T> {
   exclude: T[];
 }
 
 declare class Tiddler<
-  U extends Record<string, unknown> = Record<string, unknown>,
-  T extends U & TiddlerFields = U & TiddlerFields,
-  K extends keyof T = keyof T
+  U extends UnknownRecord = UnknownRecord,
+  T = U & TiddlerFields,
+  K = keyof T
 > {
   public fields: T;
 
@@ -96,5 +101,5 @@ declare class Tiddler<
   /**
    * Construct a Tiddler from an arbitrary number of key-value objects, merged from right.
    */
-  public constructor(...tiddlers: Array<Tiddler | Record<string, unknown>>);
+  public constructor(...tiddlers: Array<Tiddler | UnknownRecord>);
 }
