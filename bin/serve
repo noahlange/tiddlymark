@@ -15,23 +15,35 @@ const exec = promisify(cp.exec);
 
   try {
     await fs.stat(dir);
+    await fs.stat(resolve(dir, 'tiddlywiki.info'));
   } catch (e) {
-    console.error('directory does not exist');
+    console.error('directory or tiddlywiki.info does not exist');
     return;
   }
 
   const $tw = TiddlyWiki();
   const user = await exec('git config user.name');
-  const plugins = await fs.readdir(resolve(__dirname, '../wiki/plugins'));
 
-  // we also want to load all the plugins from './wiki/plugins
-  $tw.boot.extraPlugins = plugins
-    .filter(path => !path.startsWith('.'))
-    .map(p => resolve(__dirname, '../wiki/plugins', p))
-    .map(d => `+${d}`);
+  const dirs = [
+    resolve(dir, './plugins'),
+    resolve(__dirname, '../wiki/plugins')
+  ];
+
+  const plugins = await Promise.all(
+    dirs.map(d =>
+      fs.readdir(d).then(plugins =>
+        plugins
+          .filter(path => !path.startsWith('.'))
+          .map(path => resolve(d, path))
+          .map(d => `+${d}`)
+      )
+    )
+  ).then(arrays => arrays.reduce((a, b) => a.concat(b), []));
+
+  $tw.boot.extraPlugins = plugins;
 
   // create the custom deserializer as needed
-  if (plugins.includes('fs-plus')) {
+  if (plugins.some(plugin => /fs\-plus/.test(plugin))) {
     $tw.modules.define(
       '$:/plugins/noahlange/fs-plus/deserialize.js',
       'tiddlerdeserializer',
@@ -47,7 +59,7 @@ const exec = promisify(cp.exec);
   $tw.boot.argv = [
     dir,
     `--listen`,
-    `anon-username=${user.stdout.trim()}`,
+    `anon-username=${user.stdout.trim() || 'Anonymous'}`,
     ...args
   ];
 

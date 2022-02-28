@@ -1,1 +1,0 @@
-wiki/plugins/*/plugin.info filter=lfs diff=lfs merge=lfs -text
