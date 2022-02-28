@@ -2,7 +2,6 @@ const TerserPlugin = require('terser-webpack-plugin');
 const { readdirSync: readdir } = require('fs');
 const webpack = require('webpack');
 const { merge } = require('webpack-merge');
-const babel = require('./babel.config');
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -32,25 +31,7 @@ const config = {
       {
         test: /\.(ts|js)x?$/,
         exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader',
-          options: {
-            ...babel,
-            plugins: [
-              ...babel.plugins,
-              [
-                '@babel/plugin-transform-runtime',
-                {
-                  absoluteRuntime: false,
-                  corejs: false,
-                  helpers: true,
-                  regenerator: false,
-                  useESModules: true
-                }
-              ]
-            ]
-          }
-        }
+        use: [{ loader: 'babel-loader' }]
       }
     ]
   },
@@ -71,7 +52,7 @@ const config = {
   ],
   plugins: [new webpack.optimize.LimitChunkCountPlugin({ maxChunks: 1 })],
   resolve: {
-    extensions: ['.ts', '.mjs', '.js', '.json']
+    extensions: ['.ts', '.tsx', '.mjs', '.js', '.json']
   }
 };
 
